@@ -1,6 +1,6 @@
 # Planning Poker
 
-A real-time planning poker application for sprint planning and story estimation.
+A real-time planning poker application for sprint planning and story estimation. Built with Express.js and Socket.io for seamless team collaboration.
 
 ## Features
 
