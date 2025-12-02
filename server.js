@@ -169,9 +169,12 @@ io.on('connection', (socket) => {
       user: { id: user.id, name: user.name }
     });
 
-    // Broadcast updated user list
-    io.to('main-room').emit('users-updated', {
-      users: Array.from(currentRoom.users.values())
+    // Broadcast updated user list to EVERYONE (including the new user)
+    // Use a small delay to ensure socket.join is complete
+    setImmediate(() => {
+      io.to('main-room').emit('users-updated', {
+        users: Array.from(currentRoom.users.values())
+      });
     });
   });
 
