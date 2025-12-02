@@ -1,6 +1,7 @@
-// Get email from URL
+// Get email and password from URL
 const urlParams = new URLSearchParams(window.location.search);
 const userEmail = urlParams.get('email');
+const roomPassword = urlParams.get('password') || '';
 
 // Initialize Socket.io
 const socket = io();
@@ -227,7 +228,8 @@ function initializeUI() {
 
 function joinRoom() {
     socket.emit('join-room', {
-        email: userEmail
+        email: userEmail,
+        password: roomPassword
     });
 }
 

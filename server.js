@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -10,6 +12,7 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 3002;
 const ALLOWED_EMAIL_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN || '';
+const APP_PASSWORD = process.env.APP_PASSWORD || '';
 
 // Middleware
 app.set('view engine', 'ejs');
@@ -78,13 +81,34 @@ function validateEmailAndExtractName(email) {
   return { valid: true, name, email: emailLower };
 }
 
+// Password validation helper
+function validatePassword(password) {
+  if (!APP_PASSWORD) {
+    return true; // No password required
+  }
+  return password === APP_PASSWORD;
+}
+
 // Routes
 app.get('/', (req, res) => {
   const error = req.query.error;
-  res.render('index', { error, allowedEmailDomain: ALLOWED_EMAIL_DOMAIN });
+  const passwordError = req.query.passwordError;
+  res.render('index', { 
+    error, 
+    passwordError,
+    allowedEmailDomain: ALLOWED_EMAIL_DOMAIN,
+    requiresPassword: !!APP_PASSWORD
+  });
 });
 
 app.get('/room', (req, res) => {
+  // Check password if required
+  if (APP_PASSWORD) {
+    const providedPassword = req.query.password;
+    if (!providedPassword || !validatePassword(providedPassword)) {
+      return res.redirect('/?passwordError=Invalid password');
+    }
+  }
   res.render('room', { allowedEmailDomain: ALLOWED_EMAIL_DOMAIN });
 });
 
@@ -94,7 +118,13 @@ io.on('connection', (socket) => {
 
   // Join the room (only one room exists)
   socket.on('join-room', (data) => {
-    const { email } = data;
+    const { email, password } = data;
+    
+    // Validate password if required
+    if (APP_PASSWORD && !validatePassword(password)) {
+      socket.emit('error', { message: 'Invalid password' });
+      return;
+    }
     
     // Validate email
     const validation = validateEmailAndExtractName(email);
