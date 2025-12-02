@@ -5,7 +5,7 @@ A real-time planning poker application for sprint planning and story estimation.
 ## Features
 
 - Real-time multiplayer voting using WebSockets
-- Email-based authentication (requires @archerirm.com email)
+- Email-based authentication (configurable domain restriction)
 - 10-second countdown timer for voting sessions
 - Individual vote display with names and statistics
 - Story management with delete functionality
@@ -87,7 +87,7 @@ npm run dev
 
 ## Usage
 
-1. Enter your @archerirm.com email to join
+1. Enter your email to join (domain restriction configurable via environment variable)
 2. Add stories to estimate
 3. Select a story to begin
 4. Click "Start Estimation" to begin voting
