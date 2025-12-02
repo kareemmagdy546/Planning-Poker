@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning Poker - Home</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="home-card">
+        <h1>🎯 Planning Poker</h1>
+        <p class="subtitle">Estimate stories and bugs for sprint planning</p>
+        
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error-message">
+                <%= error === 'Room not found' ? 'Room not found. Please check the room code and try again.' : error %>
+            </div>
+        <% } %>
+        
+        <div class="form-section">
+            <h2>Join Planning Poker</h2>
+            <form id="join-room-form">
+                <div class="form-group">
+                    <label for="email">Your Email</label>
+                    <input type="email" id="email" name="email" placeholder="<%= typeof allowedEmailDomain !== 'undefined' && allowedEmailDomain ? `your.name@${allowedEmailDomain}` : 'your.email@example.com' %>" required>
+                    <% if (typeof allowedEmailDomain !== 'undefined' && allowedEmailDomain) { %>
+                        <small class="form-hint">Only @<%= allowedEmailDomain %> emails are allowed</small>
+                    <% } %>
+                </div>
+                <button type="submit" class="btn btn-primary">Join Room</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('join-room-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    
+    if (!email) return;
+    
+    // Validate email format (only if domain restriction is set)
+    <% if (typeof allowedEmailDomain !== 'undefined' && allowedEmailDomain) { %>
+    if (!email.endsWith('@<%= allowedEmailDomain.toLowerCase() %>')) {
+        alert('Email must end with @<%= allowedEmailDomain %>');
+        return;
+    }
+    <% } %>
+    
+    window.location.href = `/room?email=${encodeURIComponent(email)}`;
+});
+</script>
+</body>
+</html>

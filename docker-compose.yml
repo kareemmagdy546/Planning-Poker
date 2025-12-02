@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  planning-poker:
+    build: .
+    container_name: planning-poker
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+    restart: unless-stopped
+
