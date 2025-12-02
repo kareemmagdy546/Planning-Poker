@@ -1,7 +1,5 @@
-// Get email and password from URL
-const urlParams = new URLSearchParams(window.location.search);
-const userEmail = urlParams.get('email');
-const roomPassword = urlParams.get('password') || '';
+// Get email from script variable (set in room.ejs) - password already validated server-side
+const userEmail = typeof USER_EMAIL !== 'undefined' ? USER_EMAIL : '';
 
 // Initialize Socket.io
 const socket = io();
@@ -228,8 +226,7 @@ function initializeUI() {
 
 function joinRoom() {
     socket.emit('join-room', {
-        email: userEmail,
-        password: roomPassword
+        email: userEmail
     });
 }
 

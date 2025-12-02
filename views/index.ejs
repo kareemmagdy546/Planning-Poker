@@ -26,7 +26,7 @@
         
         <div class="form-section">
             <h2>Join Planning Poker</h2>
-            <form id="join-room-form">
+            <form id="join-room-form" method="POST" action="/room">
                 <% if (typeof requiresPassword !== 'undefined' && requiresPassword) { %>
                 <div class="form-group">
                     <label for="password">Room Password</label>
@@ -48,29 +48,23 @@
 
 <script>
 document.getElementById('join-room-form').addEventListener('submit', (e) => {
-    e.preventDefault();
     const email = document.getElementById('email').value.trim().toLowerCase();
-    const passwordInput = document.getElementById('password');
-    const password = passwordInput ? passwordInput.value : '';
     
-    if (!email) return;
+    if (!email) {
+        e.preventDefault();
+        return;
+    }
     
     // Validate email format (only if domain restriction is set)
     <% if (typeof allowedEmailDomain !== 'undefined' && allowedEmailDomain) { %>
     if (!email.endsWith('@<%= allowedEmailDomain.toLowerCase() %>')) {
+        e.preventDefault();
         alert('Email must end with @<%= allowedEmailDomain %>');
         return;
     }
     <% } %>
     
-    let url = `/room?email=${encodeURIComponent(email)}`;
-    <% if (typeof requiresPassword !== 'undefined' && requiresPassword) { %>
-    if (password) {
-        url += `&password=${encodeURIComponent(password)}`;
-    }
-    <% } %>
-    
-    window.location.href = url;
+    // Form will submit via POST automatically - no need to prevent default
 });
 </script>
 </body>

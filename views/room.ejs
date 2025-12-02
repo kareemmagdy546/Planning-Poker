@@ -92,8 +92,9 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    // Pass allowed email domain to client
+    // Pass allowed email domain and user email to client
     const ALLOWED_EMAIL_DOMAIN = '<%= typeof allowedEmailDomain !== 'undefined' ? allowedEmailDomain : '' %>';
+    const USER_EMAIL = '<%= typeof userEmail !== 'undefined' ? userEmail : '' %>';
 </script>
 <script src="/js/client.js"></script>
 </body>

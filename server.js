@@ -149,13 +149,9 @@ io.on('connection', (socket) => {
 
   // Join the room (only one room exists)
   socket.on('join-room', (data) => {
-    const { email, password } = data;
+    const { email } = data;
     
-    // Validate password if required
-    if (APP_PASSWORD && !validatePassword(password)) {
-      socket.emit('error', { message: 'Invalid password' });
-      return;
-    }
+    // Password is already validated via HTTP session, no need to check here
     
     // Validate email
     const validation = validateEmailAndExtractName(email);
