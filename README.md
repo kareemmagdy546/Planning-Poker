@@ -95,6 +95,34 @@ npm run dev
 6. Reveal votes to see results
 7. View statistics and individual votes
 
+## Environment Variables
+
+The following environment variables can be configured:
+
+- `PORT` - Server port (default: 3002)
+- `ALLOWED_EMAIL_DOMAIN` - Optional email domain restriction (e.g., `example.com`)
+- `APP_PASSWORD` - Required password for accessing the room (leave empty to disable)
+- `SESSION_SECRET` - Secret key for session encryption (required for session security)
+
+### Setting Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+PORT=3002
+ALLOWED_EMAIL_DOMAIN=
+APP_PASSWORD=your-secure-password
+SESSION_SECRET=your-random-secret-key-here
+```
+
+**Important:** Generate a secure random string for `SESSION_SECRET`. You can generate one using:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Or use a password generator to create a 32+ character random string.
+
 ## Technology Stack
 
 - **Backend**: Express.js with Socket.io

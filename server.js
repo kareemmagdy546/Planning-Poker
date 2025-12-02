@@ -5,6 +5,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const session = require('express-session');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +20,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'planning-poker-secret-key-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 // Single room state (only one room at a time)
 let room = null;
@@ -101,15 +108,39 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/room', (req, res) => {
+app.post('/room', (req, res) => {
+  const { email, password } = req.body;
+  
+  // Validate email
+  const validation = validateEmailAndExtractName(email);
+  if (!validation.valid) {
+    return res.redirect('/?error=' + encodeURIComponent(validation.error));
+  }
+  
   // Check password if required
   if (APP_PASSWORD) {
-    const providedPassword = req.query.password;
-    if (!providedPassword || !validatePassword(providedPassword)) {
+    if (!password || !validatePassword(password)) {
       return res.redirect('/?passwordError=Invalid password');
     }
   }
-  res.render('room', { allowedEmailDomain: ALLOWED_EMAIL_DOMAIN });
+  
+  // Store email in session
+  req.session.userEmail = validation.email;
+  req.session.authenticated = true;
+  
+  res.redirect('/room');
+});
+
+app.get('/room', (req, res) => {
+  // Check if user is authenticated
+  if (!req.session.authenticated || !req.session.userEmail) {
+    return res.redirect('/?error=Please enter your email and password');
+  }
+  
+  res.render('room', { 
+    allowedEmailDomain: ALLOWED_EMAIL_DOMAIN,
+    userEmail: req.session.userEmail 
+  });
 });
 
 // Socket.io connection handling
